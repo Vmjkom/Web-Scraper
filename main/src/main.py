@@ -1,9 +1,8 @@
-from scraper import scrape_xml
+from scraper import scrape_xml_yle
 
 def main():
-    
-    for a in scrape_xml().keys():
-        print(a)
+    #artikkelit = scrape_xml_yle()
+    print(len(scrape_xml_yle()))
 
 
 if __name__ == "__main__":

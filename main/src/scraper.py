@@ -32,25 +32,26 @@ def scrape_yle(url):
 def scrape_xml_yle():
     url = 'https://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET'
     artikkelit_lista = []
-    try:
-        sivu = requests.get(url)
-        soup = BeautifulSoup(sivu.content,features='xml')
-        artikkelit = soup.find_all('item')
+    
+    sivu = requests.get(url)
+    soup = BeautifulSoup(sivu.content,features='xml')
+    artikkelit = soup.find_all('item')
 
-        for art in artikkelit:
+    for art in artikkelit:
+        try:
             otsikko = art.find('title').text
             pubDate = art.find('pubDate').text
             teksti = art.find('content:encoded').text
-            t_soup = BeautifulSoup(teksti).get_text()
-            
+            t_soup = BeautifulSoup(teksti,features='xml').get_text()
+                
             artikkeli = {
                 'otsikko': otsikko,
                 'pubDate': pubDate,
                 'teksti': t_soup
             }
             artikkelit_lista.append(artikkeli)
-    except:
-        print("Epäonnistunut imurointi")
+        except:
+            print("Epäonnistunut imurointi")
 
     print('scrapattu')
     return artikkelit_lista
