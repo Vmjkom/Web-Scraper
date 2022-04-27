@@ -1,7 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 import json
-
+"""
+Käytetään requests kirjastoa tekemään HTTP get pyyntö Url:iin.
+Beautifulsoup kirjastoa käytetään parsettamaan xml sivu.
+Sivusta etsitään yksittäiset uutiset, josta otetaan ylös otsikko, julkaisupäivämäärä sekä teksti.
+Artikkelit tallennetaan dict tiedostoon, jotka kootaan listaan
+"""
 def scrape_xml_yle():
     url = 'https://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET'
     artikkelit_lista = []
@@ -15,7 +20,7 @@ def scrape_xml_yle():
             otsikko = art.find('title').text
             pubDate = art.find('pubDate').text
             teksti = art.find('content:encoded').text
-            t_soup = BeautifulSoup(teksti,features='xml').get_text()
+            t_soup = BeautifulSoup(teksti,features='xml').get_text() # teksti on <p> tagien sisällä, joten parsetetaan uudestaan jolloin jää vain teksti
                 
             artikkeli = {
                 'otsikko': otsikko,
@@ -26,9 +31,14 @@ def scrape_xml_yle():
         except:
             print("Epäonnistunut imurointi")
 
-    print('scrapattu')
+    print(f'Scrapattu {len(artikkelit_lista)} uutista yleltä, pvm: {list(artikkelit_lista[0].values())[1]}')
     return artikkelit_lista
+"""
+Muuten samanlainen, kuten ylen metodi, 
+mutta iltalehden rss syötteestä joudutaan kaivamaan teksti
+menemalla linkin kautta itse uutiseen.
 
+"""
 def scrape_il():
     url = 'https://www.iltalehti.fi/rss/uutiset.xml'
     sivu = requests.get(url)
@@ -54,7 +64,7 @@ def scrape_il():
             
             teksti = ''
             for p in ps:
-                teksti = teksti + p.text #Teksti on useissa <p> tageissa, joten ne iteroidaan läpi ja lisätään tekstiin
+                teksti = teksti + p.text    #Teksti on useissa <p> tageissa, joten ne iteroidaan läpi ja lisätään tekstiin
             artikkeli = {
                 'otsikko': otsikko,
                 'pubDate': pubDate,
@@ -63,8 +73,9 @@ def scrape_il():
             artikkeli_lista.append(artikkeli)
         except:
             print("Jotain väärin")
-    print("Kuinka monta artikkelia",len(artikkeli_lista))
+    print(f'Scrapattu {len(artikkeli_lista)} uutista yleltä, pvm: {list(artikkeli_lista[0].values())[1]}')
     return artikkeli_lista
+
 
 def to_json(file):
     data = json.dumps(file,ensure_ascii=False,indent=1).encode('utf8')
