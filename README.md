@@ -7,7 +7,7 @@ Build:
 - install required libraries with -pip install -r requirements.txt
 
 Run:
-- Run with -python src/main/main.py
+- Run with -python main/src/main.py
 - -You will be asked which news site you want to scrape the data from
 - -Write into the prompt either "yle" or "iltalehti" 
 - -Next you will be asked to name the file that the json data will be stored into
